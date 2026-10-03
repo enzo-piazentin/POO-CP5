@@ -24,12 +24,17 @@ public class Banho extends Atendimento {
 
     @Override
     public double calcularPreco() {
-        if ("PEQUENO".equals(getPetPorte())) {
-            return 100.0;
-        } else if ("MEDIO".equals(getPetPorte())) {
-            return 80.0;
+        if (getPetPorte() == null) {
+            throw new IllegalArgumentException("Porte do pet nao pode ser nulo");
         }
-        return 60.0;
+        if (PEQUENO.equals(getPetPorte())) {
+            return 60.0;
+        } else if (MEDIO.equals(getPetPorte())) {
+            return 80.0;
+        } else if (GRANDE.equals(getPetPorte())) {
+            return 100.0;
+        }
+        throw new IllegalArgumentException("Porte invalido: " + getPetPorte());
     }
 
     @Override
