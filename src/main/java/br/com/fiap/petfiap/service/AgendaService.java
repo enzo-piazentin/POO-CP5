@@ -4,7 +4,6 @@ import br.com.fiap.petfiap.exception.AtendimentoNaoEncontradoException;
 import br.com.fiap.petfiap.exception.HorarioOcupadoException;
 import br.com.fiap.petfiap.model.Atendimento;
 import br.com.fiap.petfiap.repository.AtendimentoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,8 +13,11 @@ import java.util.List;
 @Service
 public class AgendaService {
 
-    @Autowired
-    private AtendimentoRepository repository;
+    private final AtendimentoRepository repository;
+
+    public AgendaService(AtendimentoRepository repository) {
+        this.repository = repository;
+    }
 
     // Agenda um novo atendimento: recusa horario ja ocupado pelo mesmo pet.
     public Atendimento agendar(Atendimento novo) {
@@ -23,15 +25,11 @@ public class AgendaService {
             throw new IllegalArgumentException("Nao e possivel agendar em data/hora no passado");
         }
         List<Atendimento> doPet = repository.findByPetNome(novo.getPetNome());
-        for (Atendimento a : doPet) {
-            if (a.getPetNome().equals(novo.getPetNome()) && a.getDataHora().equals(novo.getDataHora())
-                    && Atendimento.AGENDADO.equals(a.getStatus())) {
-                throw new HorarioOcupadoException(
-                        "Pet " + novo.getPetNome() + " ja possui atendimento agendado nesse horario");
-            }
+        if (existeConflitoHorario(novo, doPet)) {
+            throw new HorarioOcupadoException(
+                    "Pet " + novo.getPetNome() + " ja possui atendimento agendado nesse horario");
         }
-        Atendimento salvo = repository.save(novo);
-        return salvo;
+        return repository.save(novo);
     }
 
     // Busca pelo id; nunca retorna null, o orElseThrow garante a excecao.
@@ -57,5 +55,12 @@ public class AgendaService {
     // Lista os atendimentos de um pet.
     public List<Atendimento> buscarPorPet(String petNome) {
         return repository.findByPetNome(petNome);
+    }
+
+    // Verifica se existe conflito de horario para um pet.
+    private boolean existeConflitoHorario(Atendimento novo, List<Atendimento> atendimentosDoPet) {
+        return atendimentosDoPet.stream()
+                .anyMatch(a -> a.getDataHora().equals(novo.getDataHora())
+                        && Atendimento.AGENDADO.equals(a.getStatus()));
     }
 }
