@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 // Testes unitarios do model: sem banco, sem Spring (Aula 15).
 public class TosaTest {
@@ -29,5 +30,35 @@ public class TosaTest {
 
         // Assert
         assertEquals(70.0, preco, 0.001);
+    }
+
+    @Test
+    public void deveDurar60MinutosQuandoForTosa() {
+        // Arrange: chamada pelo tipo abstrato, como o controller faz (polimorfismo)
+        Atendimento tosa = tosaDoRex();
+
+        // Act
+        int duracao = tosa.getDuracaoMinutos();
+
+        // Assert
+        assertEquals(60, duracao);
+    }
+
+    @Test
+    public void deveRecusarPorteNulo() {
+        // Arrange
+        Tosa tosa = new Tosa(1, "Rex", null, "Ana", LocalDateTime.of(2026, 10, 1, 10, 0));
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, tosa::calcularPreco);
+    }
+
+    @Test
+    public void deveRecusarPorteInvalido() {
+        // Arrange
+        Tosa tosa = new Tosa(1, "Rex", "MINI", "Ana", LocalDateTime.of(2026, 10, 1, 10, 0));
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, tosa::calcularPreco);
     }
 }
