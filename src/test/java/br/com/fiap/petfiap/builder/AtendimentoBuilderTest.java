@@ -51,4 +51,34 @@ public class AtendimentoBuilderTest {
                 .comDataHora(data)
                 .construir(9));
     }
+
+    @Test
+    public void deveRecusarMontagemSemTipo() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> new AtendimentoBuilder()
+                .comPet("Rex", "PEQUENO")
+                .comTutor("Ana")
+                .comDataHora(data)
+                .construir(10));
+    }
+
+    @Test
+    public void deveRecusarMontagemSemTutor() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> new AtendimentoBuilder()
+                .comTipo("BANHO")
+                .comPet("Rex", "PEQUENO")
+                .comDataHora(data)
+                .construir(11));
+    }
+
+    @Test
+    public void deveRecusarMontagemSemDataHora() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> new AtendimentoBuilder()
+                .comTipo("BANHO")
+                .comPet("Rex", "PEQUENO")
+                .comTutor("Ana")
+                .construir(12));
+    }
 }
