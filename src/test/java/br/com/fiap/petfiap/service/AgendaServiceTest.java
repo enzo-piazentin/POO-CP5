@@ -19,9 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 // Teste unitario da agenda: NAO sobe o Spring e NAO conecta no Oracle (Aula 15).
 // O @Mock cria um AtendimentoRepository falso; o @InjectMocks injeta esse falso
@@ -109,5 +107,45 @@ public class AgendaServiceTest {
 
         // Act + Assert
         assertThrows(AtendimentoNaoEncontradoException.class, () -> service.buscarPorId(99L));
+    }
+
+    @Test
+    public void deveRecusarAgendamentoQuandoDataHoraEstaNoPassado() {
+        // Arrange: banho do Rex marcado para ontem
+        Banho noPassado = new Banho(1, "Rex", "PEQUENO", "Ana", LocalDateTime.now().minusDays(1));
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> service.agendar(noPassado));
+
+        // O repository nao e acionado em nenhum momento (nem consulta, nem save)
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    public void deveRecusarCancelamentoDeAtendimentoJaConcluido() {
+        // Arrange
+        Banho jaConcluido = banhoDoRexAmanha10h();
+        jaConcluido.setStatus("CONCLUIDO");
+        when(repository.findById(1L)).thenReturn(Optional.of(jaConcluido));
+
+        // Act + Assert
+        assertThrows(StatusInvalidoException.class, () -> service.cancelar(1L));
+
+        // Nada e salvo quando a operacao e recusada
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    public void deveRecusarCancelamentoDeAtendimentoJaCancelado() {
+        // Arrange
+        Banho jaCancelado = banhoDoRexAmanha10h();
+        jaCancelado.setStatus("CANCELADO");
+        when(repository.findById(1L)).thenReturn(Optional.of(jaCancelado));
+
+        // Act + Assert
+        assertThrows(StatusInvalidoException.class, () -> service.cancelar(1L));
+
+        // Nada e salvo quando a operacao e recusada
+        verify(repository, never()).save(any());
     }
 }
