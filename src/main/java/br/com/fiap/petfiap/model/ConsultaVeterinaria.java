@@ -14,7 +14,7 @@ public class ConsultaVeterinaria extends Atendimento {
     }
 
     public ConsultaVeterinaria(int protocolo, String petNome, String petPorte, String tutorNome, LocalDateTime dataHora) {
-        super();
+        super(protocolo, petNome, petPorte, tutorNome, dataHora);
     }
 
     @Override
@@ -24,6 +24,12 @@ public class ConsultaVeterinaria extends Atendimento {
 
     @Override
     public double calcularPreco() {
+        if (getPetPorte() == null) {
+            throw new IllegalArgumentException("Porte do pet nao pode ser nulo");
+        }
+        if (!PEQUENO.equals(getPetPorte()) && !MEDIO.equals(getPetPorte()) && !GRANDE.equals(getPetPorte())) {
+            throw new IllegalArgumentException("Porte invalido: " + getPetPorte());
+        }
         return 150.0;
     }
 
