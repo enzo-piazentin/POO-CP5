@@ -2,6 +2,12 @@ package br.com.fiap.petfiap.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -30,5 +36,30 @@ public class GeradorProtocoloTest {
         assertEquals(1, primeiro);
         assertEquals(2, segundo);
         assertEquals(3, terceiro);
+    }
+
+    @Test
+    public void deveGerarProtocolosUnicosEmAmbienteConcorrente() throws Exception {
+        // Arrange: reseta o contador para o teste
+        GeradorProtocolo gerador = GeradorProtocolo.getInstancia();
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        List<Callable<Integer>> tasks = new ArrayList<>();
+
+        // Cria 10 tarefas que chamam proximo() simultaneamente
+        for (int i = 0; i < 10; i++) {
+            tasks.add(gerador::proximo);
+        }
+
+        // Act: executa todas as tarefas simultaneamente
+        List<java.util.concurrent.Future<Integer>> futures = executor.invokeAll(tasks);
+        List<Integer> resultados = new ArrayList<>();
+        for (java.util.concurrent.Future<Integer> future : futures) {
+            resultados.add(future.get());
+        }
+        executor.shutdown();
+
+        // Assert: todos os protocolos devem ser unicos (sem duplicatas)
+        long unicos = resultados.stream().distinct().count();
+        assertEquals(10, unicos, "Protocolos devem ser unicos em ambiente concorrente");
     }
 }
