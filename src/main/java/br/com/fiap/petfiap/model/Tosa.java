@@ -24,12 +24,17 @@ public class Tosa extends Atendimento {
 
     @Override
     public double calcularPreco() {
-        if ("PEQUENO".equals(getPetPorte())) {
-            return 70.0;
-        } else if ("MEDIO".equals(getPetPorte())) {
-            return 90.0;
+        if (getPetPorte() == null) {
+            throw new IllegalArgumentException("Porte do pet nao pode ser nulo");
         }
-        return 120.0;
+        if (PEQUENO.equals(getPetPorte())) {
+            return 70.0;
+        } else if (MEDIO.equals(getPetPorte())) {
+            return 90.0;
+        } else if (GRANDE.equals(getPetPorte())) {
+            return 120.0;
+        }
+        throw new IllegalArgumentException("Porte invalido: " + getPetPorte());
     }
 
     @Override
@@ -37,7 +42,8 @@ public class Tosa extends Atendimento {
         return 30;
     }
 
-    public int getDuracaoMinutos(String porte) {
+    @Override
+    public int getDuracaoMinutos() {
         return 60;
     }
 }
