@@ -10,7 +10,6 @@
 | Enzo Ribeiro Domingues Piazentin | 564216 | 2CCPO |
 | Guilherme Domingues Califoni | 565157 | 2CCPO |
 | Antonio Lucas Santana Tavares  | 565516 | 2CCPO |
-| Lucas M | 563667 | 2CCPO |
 | Gustavo Schimith | 564800 | 2CCPO |
 
 | Campo | |
