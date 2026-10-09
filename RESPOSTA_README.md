@@ -15,10 +15,10 @@
 
 | Campo | |
 |---|---|
-| **Total de bugs corrigidos** | 8 / 12 |
-| **Total de ajustes de Clean Code** | 2 / 6 |
-| **Total de testes novos escritos** | 6 / 6 |
-| **Suíte final (Run As → JUnit Test)** | 26 testes, 0 falhas (20 originais + 6 novos) |
+| **Total de bugs corrigidos** | 12 / 12 |
+| **Total de ajustes de Clean Code** | 6 / 6 |
+| **Total de testes novos escritos** | 12 / 12 |
+| **Suíte final (Run As → JUnit Test)** | 32 testes, 0 falhas (20 originais + 12 novos) |
 
 ---
 
@@ -34,6 +34,10 @@
 | bug06 | A `AtendimentoFactory` criava instância de `Banho` quando o tipo era "TOSA". Além disso, usava nomes de parâmetros de uma letra (p, t, n, po, tu, d), dificultando a leitura. | `AtendimentoFactory.java`, método `criar`: case "TOSA" -> new Banho(...) e parâmetros ilegíveis. | Corrigido para criar `Tosa` e renomeados parâmetros para nomes descritivos (protocolo, tipo, petNome, petPorte, tutorNome, dataHora). | Factory Method e Clean Code — Aula 14. |
 | bug07 | O método `cancelar()` em `Atendimento` não validava o status antes de cancelar. Era possível cancelar atendimentos já concluídos ou cancelados. Além disso, a classe tinha setters desnecessários que expunham estado que deveria ser imutável. | `Atendimento.java`, método `cancelar`: executava incondicionalmente. A classe também tinha setters para id, protocolo, petNome, petPorte, tutorNome e dataHora sem uso. | Adicionada validação de status antes de cancelar (só pode cancelar se AGENDADO). Removidos setters desnecessários e criadas constantes para status e portes. | Máquina de estados e encapsulamento — Aula 13. |
 | bug08 | O `AgendaService` usava comparação por referência (`==`) em vez de `.equals()` para verificar conflito de horário. Além disso, não validava se a data/hora estava no passado. | `AgendaService.java`, método `agendar`: `a.getPetNome() == novo.getPetNome()` e `a.getDataHora() == novo.getDataHora()`. Sem validação de data. | Corrigido para usar `.equals()` nas comparações. Adicionada validação para recusar agendamento no passado. | `==` vs `.equals()` e validação de invariantes — Aula 7/11. |
+| bug09 | Mensagens de erro em `Banho.java` sem acentuação ("nao", "invalido"). | `Banho.java`, método `calcularPreco`: mensagens de exceção sem acentuação correta. | Corrigida acentuação em todas as mensagens ("não", "inválido"). | Qualidade de código e internacionalização — Aula 11. |
+| bug10 | Mensagens de erro em `Tosa.java` sem acentuação ("nao", "invalido"). | `Tosa.java`, método `calcularPreco`: mensagens de exceção sem acentuação correta. | Corrigida acentuação em todas as mensagens ("não", "inválido"). | Qualidade de código e internacionalização — Aula 11. |
+| bug11 | Mensagens de erro em `ConsultaVeterinaria.java` sem acentuação ("nao", "invalido"). | `ConsultaVeterinaria.java`, método `calcularPreco`: mensagens de exceção sem acentuação correta. | Corrigida acentuação em todas as mensagens ("não", "inválido"). | Qualidade de código e internacionalização — Aula 11. |
+| bug12 | O construtor de `Atendimento` não validava campos obrigatórios (petNome, petPorte, tutorNome, dataHora). Era possível criar instâncias com valores nulos. | `Atendimento.java`, construtor protegido: não verificava null/blank nos parâmetros. | Adicionada validação de null e blank para todos os campos obrigatórios no construtor. | Validação de invariantes no construtor — Aula 11. |
 
 ---
 
@@ -43,6 +47,10 @@
 |---|---|---|---|
 | clean01 | `AtendimentoController.java` — método privado `calcularDescontoFidelidade(int pontos)`, comentado como "feature futura" mas nunca chamado. | Código morto (YAGNI) — método sem uso poluindo a classe. | Método e o comentário associado removidos. |
 | clean02 | `AgendaService.java` e `AtendimentoController.java` — usavam `@Autowired` em campos (field injection). Além disso, o loop de verificação de conflito estava inline no método `agendar`. | Field injection é considerada má prática (dificulta testes e torna dependências ocultas). O loop inline tornava o método menos legível. | Substituído por injeção via construtor (constructor injection). Extraído método privado `existeConflitoHorario()` para melhorar legibilidade e usar Stream API. |
+| clean03 | `Atendimento.java` — setter `setStatus(String status)` expunha modificação direta do status, violando o encapsulamento da máquina de estados. | Encapsulamento — o status só deveria mudar via `concluir()` e `cancelar()`, que validam o estado atual. | Setter removido. O status agora só pode ser alterado pelos métodos de transição de estado que garantem as regras de negócio. |
+| clean04 | `AtendimentoController.java` — método `agendar()` tinha lógica de criação de atendimento inline (gerar protocolo, usar builder, construir). | Método longo com múltiplas responsabilidades (Single Responsibility). Dificulta teste e manutenção. | Extraído método privado `criarAtendimento()` que encapsula toda a lógica de criação, deixando `agendar()` focado apenas no fluxo HTTP. |
+| clean05 | `AtendimentoBuilder.java` — comentário desatualizado dizia que "a validação fica por conta do controller", mas o builder já valida todos os campos. | Comentário enganoso — pode confundir futuros mantenedores sobre onde está a responsabilidade de validação. | Comentário removido. A validação está claramente no método `construir()`. |
+| clean06 | `AgendaService.java` — comentários e mensagens de erro sem acentuação ("horario", "nao", "ja", "Nao e possivel"). | Qualidade do código — português incorreto em strings visíveis ao usuário e em documentação. | Corrigida acentuação em todos os comentários e mensagens ("horário", "não", "já", "Não é possível"). |
 
 ---
 
