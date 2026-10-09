@@ -25,7 +25,7 @@ public class Banho extends Atendimento {
     @Override
     public double calcularPreco() {
         if (getPetPorte() == null) {
-            throw new IllegalArgumentException("Porte do pet nao pode ser nulo");
+            throw new IllegalArgumentException("Porte do pet não pode ser nulo");
         }
         if (PEQUENO.equals(getPetPorte())) {
             return 60.0;
@@ -34,7 +34,7 @@ public class Banho extends Atendimento {
         } else if (GRANDE.equals(getPetPorte())) {
             return 100.0;
         }
-        throw new IllegalArgumentException("Porte invalido: " + getPetPorte());
+        throw new IllegalArgumentException("Porte inválido: " + getPetPorte());
     }
 
     @Override
