@@ -19,26 +19,26 @@ public class AgendaService {
         this.repository = repository;
     }
 
-    // Agenda um novo atendimento: recusa horario ja ocupado pelo mesmo pet.
+    // Agenda um novo atendimento: recusa horário já ocupado pelo mesmo pet.
     public Atendimento agendar(Atendimento novo) {
         if (novo.getDataHora().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Nao e possivel agendar em data/hora no passado");
+            throw new IllegalArgumentException("Não é possível agendar em data/hora no passado");
         }
         List<Atendimento> doPet = repository.findByPetNome(novo.getPetNome());
         if (existeConflitoHorario(novo, doPet)) {
             throw new HorarioOcupadoException(
-                    "Pet " + novo.getPetNome() + " ja possui atendimento agendado nesse horario");
+                    "Pet " + novo.getPetNome() + " já possui atendimento agendado nesse horário");
         }
         return repository.save(novo);
     }
 
-    // Busca pelo id; nunca retorna null, o orElseThrow garante a excecao.
+    // Busca pelo id; nunca retorna null, o orElseThrow garante a exceção.
     public Atendimento buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new AtendimentoNaoEncontradoException("Atendimento nao encontrado: " + id));
+                .orElseThrow(() -> new AtendimentoNaoEncontradoException("Atendimento não encontrado: " + id));
     }
 
-    // Conclui o atendimento (status AGENDADO -> CONCLUIDO).
+    // Conclui o atendimento (status AGENDADO -> CONCLUÍDO).
     public Atendimento concluir(Long id) {
         Atendimento atendimento = buscarPorId(id);
         atendimento.concluir();
@@ -57,7 +57,7 @@ public class AgendaService {
         return repository.findByPetNome(petNome);
     }
 
-    // Verifica se existe conflito de horario para um pet.
+    // Verifica se existe conflito de horário para um pet.
     private boolean existeConflitoHorario(Atendimento novo, List<Atendimento> atendimentosDoPet) {
         return atendimentosDoPet.stream()
                 .anyMatch(a -> a.getDataHora().equals(novo.getDataHora())
