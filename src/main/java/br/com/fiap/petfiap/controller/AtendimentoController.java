@@ -35,19 +35,23 @@ public class AtendimentoController {
             @RequestParam String tutorNome,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataHora) {
         try {
-            int protocolo = GeradorProtocolo.getInstancia().proximo();
-            Atendimento atendimento = new AtendimentoBuilder()
-                    .comTipo(tipo)
-                    .comPet(petNome, porte)
-                    .comTutor(tutorNome)
-                    .comDataHora(dataHora)
-                    .construir(protocolo);
+            Atendimento atendimento = criarAtendimento(tipo, petNome, porte, tutorNome, dataHora);
             return ResponseEntity.status(201).body(service.agendar(atendimento));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (HorarioOcupadoException e) {
             return ResponseEntity.status(409).build();
         }
+    }
+
+    private Atendimento criarAtendimento(String tipo, String petNome, String porte, String tutorNome, LocalDateTime dataHora) {
+        int protocolo = GeradorProtocolo.getInstancia().proximo();
+        return new AtendimentoBuilder()
+                .comTipo(tipo)
+                .comPet(petNome, porte)
+                .comTutor(tutorNome)
+                .comDataHora(dataHora)
+                .construir(protocolo);
     }
 
     // GET /api/atendimentos/{id} - Buscar por id
