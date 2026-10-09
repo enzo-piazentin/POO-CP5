@@ -38,6 +38,18 @@ public abstract class Atendimento {
     }
 
     protected Atendimento(int protocolo, String petNome, String petPorte, String tutorNome, LocalDateTime dataHora) {
+        if (petNome == null || petNome.isBlank()) {
+            throw new IllegalArgumentException("Nome do pet é obrigatório");
+        }
+        if (petPorte == null || petPorte.isBlank()) {
+            throw new IllegalArgumentException("Porte do pet é obrigatório");
+        }
+        if (tutorNome == null || tutorNome.isBlank()) {
+            throw new IllegalArgumentException("Nome do tutor é obrigatório");
+        }
+        if (dataHora == null) {
+            throw new IllegalArgumentException("Data e hora são obrigatórias");
+        }
         this.protocolo = protocolo;
         this.petNome = petNome;
         this.petPorte = petPorte;
@@ -60,10 +72,10 @@ public abstract class Atendimento {
         return 30;
     }
 
-    // Conclui o atendimento (so pode em AGENDADO)
+    // Conclui o atendimento (só pode em AGENDADO)
     public void concluir() {
         if (!AGENDADO.equals(status)) {
-            throw new StatusInvalidoException("Atendimento " + protocolo + " nao pode ser concluido: status " + status);
+            throw new StatusInvalidoException("Atendimento " + protocolo + " não pode ser concluído: status " + status);
         }
         status = CONCLUIDO;
     }
@@ -71,7 +83,7 @@ public abstract class Atendimento {
     // Cancela o atendimento
     public void cancelar() {
         if (!AGENDADO.equals(status)) {
-            throw new StatusInvalidoException("Atendimento " + protocolo + " nao pode ser cancelado: status " + status);
+            throw new StatusInvalidoException("Atendimento " + protocolo + " não pode ser cancelado: status " + status);
         }
         status = CANCELADO;
     }
@@ -89,5 +101,4 @@ public abstract class Atendimento {
     public LocalDateTime getDataHora() { return dataHora; }
 
     public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
 }
